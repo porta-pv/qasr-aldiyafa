@@ -608,6 +608,14 @@
   }
 
 </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#B8942A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="قصر الضيافة">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="shortcut icon" href="favicon.ico">
 </head>
 <body>
 
@@ -1113,5 +1121,254 @@
   })();
 
 </script>
+
+<!-- ═══════════════ PWA INSTALL PROMPT ═══════════════ -->
+<style>
+.pwa-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,26,46,0.55);
+  z-index: 9000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.pwa-overlay.show { opacity: 1; pointer-events: all; }
+
+.pwa-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  z-index: 9001;
+  padding: 10px 22px 32px;
+  transform: translateY(110%);
+  transition: transform 0.4s cubic-bezier(.32,1.2,.42,1);
+  box-shadow: 0 -8px 40px rgba(13,26,46,0.18);
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+}
+.pwa-sheet.show { transform: translateY(0); }
+
+.pwa-handle {
+  width: 40px; height: 4px;
+  background: #DDD;
+  border-radius: 4px;
+  margin: 0 auto 18px;
+  cursor: grab;
+}
+
+.pwa-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.pwa-icon {
+  width: 58px; height: 58px;
+  border-radius: 14px;
+  object-fit: contain;
+  border: 1px solid #EDE6D8;
+  flex-shrink: 0;
+  background: #F8F4ED;
+  padding: 4px;
+}
+
+.pwa-text h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1C1A2E;
+  margin-bottom: 4px;
+}
+
+.pwa-text p {
+  font-size: 13px;
+  color: #8A9BAD;
+  line-height: 1.5;
+}
+
+.pwa-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pwa-btn-install {
+  width: 100%;
+  background: linear-gradient(135deg, #B8942A, #D4AE44);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.pwa-btn-install:hover { opacity: 0.9; }
+
+.pwa-btn-later {
+  background: #F8F4ED;
+  color: #8A9BAD;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* iOS instructions */
+.pwa-ios {
+  background: #F8F4ED;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #3A5570;
+  line-height: 1.8;
+  display: none;
+}
+.pwa-ios.show { display: block; }
+.pwa-ios strong { color: #1C1A2E; }
+</style>
+
+<div class="pwa-overlay" id="pwaOverlay"></div>
+<div class="pwa-sheet" id="pwaSheet">
+  <div class="pwa-handle"></div>
+  <div class="pwa-body">
+    <img class="pwa-icon" src="icon-192.png" style="border-radius:16px;" alt="قصر الضيافة">
+    <div class="pwa-text">
+      <h3>ثبّت تطبيق قصر الضيافة</h3>
+      <p>احصل على تجربة أسرع وأفضل مباشرة من شاشتك الرئيسية</p>
+    </div>
+  </div>
+  <div class="pwa-ios" id="pwaIos">
+    <strong>لتثبيت التطبيق على iPhone:</strong><br>
+    ١. اضغط على زر <strong>المشاركة</strong> &#x2197; في الأسفل<br>
+    ٢. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong><br>
+    ٣. اضغط <strong>تثبيت</strong>
+  </div>
+  <div class="pwa-actions">
+    <button class="pwa-btn-install" id="pwaInstallBtn">ثبّت التطبيق</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const overlay    = document.getElementById('pwaOverlay');
+  const sheet      = document.getElementById('pwaSheet');
+  const installBtn = document.getElementById('pwaInstallBtn');
+  const iosBox     = document.getElementById('pwaIos');
+
+  // [DEV MODE] Always show - remove this check in production
+  let deferredPrompt = null;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (isInStandalone) return;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  function showSheet() {
+    overlay.classList.add('show');
+    sheet.classList.add('show');
+  }
+
+  function hideSheet(animate) {
+    if (animate) {
+      sheet.style.transition = 'transform 0.3s ease';
+      sheet.style.transform  = 'translateY(110%)';
+      overlay.classList.remove('show');
+      overlay.style.opacity  = '';
+      overlay.style.pointerEvents = 'none';
+      setTimeout(() => {
+        sheet.classList.remove('show');
+        sheet.style.transform  = '';
+        sheet.style.transition = '';
+      }, 300);
+    } else {
+      overlay.classList.remove('show');
+      overlay.style.opacity  = '';
+      overlay.style.pointerEvents = 'none';
+      sheet.classList.remove('show');
+    }
+  }
+
+  // Always show after 3 seconds (dev mode)
+  setTimeout(showSheet, 3000);
+
+  // ── Drag to dismiss ──────────────────────────────────────────
+  let startY = 0, currentY = 0, dragging = false;
+
+  function onDragStart(e) {
+    startY   = e.touches ? e.touches[0].clientY : e.clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }
+
+  function onDragMove(e) {
+    if (!dragging) return;
+    currentY = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+    if (currentY < 0) currentY = 0;
+    sheet.style.transform = 'translateY(' + currentY + 'px)';
+    overlay.style.opacity = Math.max(0, 1 - currentY / 300);
+  }
+
+  function onDragEnd() {
+    if (!dragging) return;
+    dragging = false;
+    if (currentY > 100) {
+      hideSheet(true);
+    } else {
+      sheet.style.transition = 'transform 0.3s ease';
+      sheet.style.transform  = 'translateY(0)';
+      overlay.style.opacity  = '';
+      setTimeout(() => { sheet.style.transition = ''; }, 300);
+    }
+    currentY = 0;
+  }
+
+  // Touch events
+  sheet.addEventListener('touchstart', onDragStart, { passive: true });
+  sheet.addEventListener('touchmove',  onDragMove,  { passive: true });
+  sheet.addEventListener('touchend',   onDragEnd);
+
+  // Mouse events (desktop testing)
+  sheet.addEventListener('mousedown', onDragStart);
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('mouseup',   onDragEnd);
+
+  // ── Install button ───────────────────────────────────────────
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === 'accepted') hideSheet(true);
+    } else {
+      const androidMsg = '<strong>لتثبيت على Android:</strong><br>١. اضغط قائمة المتصفح <strong>&#8942;</strong> في الأعلى<br>٢. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong><br>٣. اضغط <strong>تثبيت</strong>';
+      const iosMsg     = '<strong>لتثبيت على iPhone:</strong><br>١. اضغط <strong>الثلاث نقاط</strong> &#8942; في الأسفل<br>٢. اضغط <strong>مشاركة</strong><br>٣. اضغط <strong>عرض المزيد</strong><br>٤. اختر <strong>إضافة إلى الشاشة الرئيسية</strong>';
+      iosBox.innerHTML = isIOS ? iosMsg : androidMsg;
+      iosBox.classList.add('show');
+      installBtn.textContent = 'فهمت';
+      installBtn.onclick = () => hideSheet(true);
+    }
+  });
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+})();
+</script>
+<!-- ═══════════════════════════════════════════════════ -->
+
 </body>
 </html>

@@ -1283,7 +1283,7 @@
     }
 
     wrap.innerHTML = filtered.map(meal => `
-      <div class="meal-card meal-add-btn" data-meal-id="${meal.id}" data-meal='${JSON.stringify({id:meal.id,name:meal.name,desc:meal.desc,price:meal.price,cal:meal.cal||0,img:meal.img})}'>
+      <div class="meal-card" data-meal-id="${meal.id}" data-meal='${JSON.stringify({id:meal.id,name:meal.name,desc:meal.desc,price:meal.price,cal:meal.cal||0,img:meal.img})}'>
         <div class="meal-img"><img src="${meal.img}" alt="${meal.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"></div>
         <div class="meal-info">
           <div class="meal-name">${meal.name}</div>
@@ -1297,7 +1297,7 @@
               </div>
               <div class="meal-price">${meal.price} <small>ريال</small></div>
             </div>
-            <button class="add-meal-btn" onclick="event.stopPropagation();openMealSheet({id:meal.id,name:meal.name,desc:meal.desc,price:meal.price,cal:meal.cal||0,img:meal.img})">+</button>
+            <button class="add-meal-btn meal-add-btn" onclick="event.stopPropagation();var d=this.closest('[data-meal]');if(d)openMealSheet(JSON.parse(d.dataset.meal))">+</button>
           </div>
         </div>
         <button class="fav-btn ${meal.fav ? 'active' : ''}" onclick="toggleFav(event,'${meal.id}')">

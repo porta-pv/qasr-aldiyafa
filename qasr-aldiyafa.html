@@ -677,6 +677,293 @@
   flex-shrink: 0;
 }
 
+
+/* ═══════════════ MEAL SHEET ═══════════════ */
+.meal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(13,26,46,0.55);
+  z-index: 8000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.meal-overlay.show { opacity: 1; pointer-events: all; }
+
+.meal-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  z-index: 8001;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(110%);
+  transition: transform 0.4s cubic-bezier(.32,1.2,.42,1);
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+  touch-action: none;
+}
+.meal-sheet.show { transform: translateY(0); }
+
+/* Handle */
+.meal-sheet-handle {
+  width: 40px; height: 4px;
+  background: #DDD; border-radius: 4px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+/* Header image */
+.meal-sheet-img {
+  width: 100%; height: 200px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Close btn */
+.meal-sheet-close {
+  position: absolute;
+  top: 52px; left: 16px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(13,26,46,0.55);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+/* Scrollable body */
+.meal-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 100px;
+  overscroll-behavior: contain;
+}
+.meal-sheet-body::-webkit-scrollbar { display: none; }
+
+/* Meal info */
+.meal-sheet-name {
+  font-size: 20px; font-weight: 800;
+  color: #0D2137; margin-bottom: 6px;
+}
+.meal-sheet-desc {
+  font-size: 13px; color: #8A9BAD;
+  line-height: 1.6; margin-bottom: 8px;
+}
+.meal-sheet-meta {
+  display: flex; gap: 12px;
+  align-items: center; margin-bottom: 20px;
+}
+.meal-sheet-price {
+  font-size: 18px; font-weight: 800;
+  color: #0D2137;
+}
+.meal-sheet-cal {
+  font-size: 12px; color: #8A9BAD;
+  background: #F8F4ED;
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* Section */
+.ms-section {
+  margin-bottom: 20px;
+  border: 1px solid #EDE6D8;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.ms-section-header {
+  padding: 14px 16px 10px;
+  background: #F8F4ED;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ms-section-title {
+  font-size: 15px; font-weight: 700;
+  color: #0D2137;
+}
+.ms-section-sub {
+  font-size: 11px; color: #8A9BAD;
+  margin-top: 2px;
+}
+.ms-required-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  background: #FDEDEC; color: #C0392B;
+  white-space: nowrap;
+}
+.ms-optional-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  background: #EAFAF1; color: #1E8449;
+  white-space: nowrap;
+}
+
+/* Option row */
+.ms-option {
+  display: flex; align-items: center;
+  padding: 13px 16px;
+  border-bottom: 1px solid #F8F4ED;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 12px;
+}
+.ms-option:last-child { border-bottom: none; }
+.ms-option:hover { background: #FDFAF6; }
+.ms-option.selected { background: #FEF9E7; }
+
+.ms-option-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid #D0D0D0;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.ms-option-dot.checked {
+  border-color: #B8942A;
+  background: #B8942A;
+}
+.ms-option-dot.checked::after {
+  content: '';
+  width: 8px; height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+.ms-option-box {
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  border: 2px solid #D0D0D0;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.ms-option-box.checked {
+  border-color: #B8942A;
+  background: #B8942A;
+}
+.ms-option-box.checked::after {
+  content: '';
+  width: 10px; height: 7px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.ms-option-label {
+  flex: 1;
+  font-size: 14px; font-weight: 500;
+  color: #0D2137;
+}
+.ms-option-price {
+  font-size: 13px; font-weight: 600;
+  color: #B8942A;
+}
+
+/* Cards type (suggested) */
+.ms-cards {
+  display: flex; gap: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.ms-cards::-webkit-scrollbar { display: none; }
+.ms-card {
+  flex-shrink: 0;
+  width: 90px;
+  border: 2px solid #EDE6D8;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.ms-card.selected {
+  border-color: #B8942A;
+  background: #FEF9E7;
+}
+.ms-card img {
+  width: 100%; height: 64px;
+  object-fit: cover;
+}
+.ms-card-name {
+  font-size: 11px; font-weight: 600;
+  color: #0D2137; padding: 4px 4px 2px;
+}
+.ms-card-price {
+  font-size: 11px; color: #B8942A;
+  font-weight: 700; padding-bottom: 6px;
+}
+
+/* Note textarea */
+.ms-note {
+  padding: 12px 16px;
+}
+.ms-note textarea {
+  width: 100%;
+  border: 1px solid #EDE6D8;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 13px;
+  color: #0D2137;
+  resize: none;
+  height: 80px;
+  outline: none;
+  direction: rtl;
+  background: #F8F4ED;
+}
+.ms-note textarea:focus {
+  border-color: #B8942A;
+  background: #fff;
+}
+
+/* Footer */
+.meal-sheet-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 16px 24px;
+  background: white;
+  border-top: 1px solid #EDE6D8;
+  display: flex; gap: 10px; align-items: center;
+}
+.ms-qty {
+  display: flex; align-items: center; gap: 0;
+  border: 1.5px solid #EDE6D8;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.ms-qty-btn {
+  width: 38px; height: 44px;
+  border: none; background: none;
+  font-size: 20px; cursor: pointer;
+  color: #0D2137; font-weight: 700;
+  transition: background 0.15s;
+}
+.ms-qty-btn:hover { background: #F8F4ED; }
+.ms-qty-num {
+  width: 36px; text-align: center;
+  font-size: 16px; font-weight: 700;
+  color: #0D2137;
+}
+.ms-add-btn {
+  flex: 1; height: 48px;
+  background: linear-gradient(135deg, #B8942A, #D4AE44);
+  color: white; border: none;
+  border-radius: 14px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+.ms-add-btn:hover { opacity: 0.9; }
+.ms-add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 </style>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#B8942A">
@@ -996,7 +1283,7 @@
     }
 
     wrap.innerHTML = filtered.map(meal => `
-      <div class="meal-card" data-meal-id="${meal.id}">
+      <div class="meal-card meal-add-btn" data-meal-id="${meal.id}" data-meal='${JSON.stringify({id:meal.id,name:meal.name,desc:meal.desc,price:meal.price,cal:meal.cal||0,img:meal.img})}'>
         <div class="meal-img"><img src="${meal.img}" alt="${meal.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"></div>
         <div class="meal-info">
           <div class="meal-name">${meal.name}</div>
@@ -1010,7 +1297,7 @@
               </div>
               <div class="meal-price">${meal.price} <small>ريال</small></div>
             </div>
-            <button class="add-meal-btn" onclick="addToCart(event,'${meal.id}')">+</button>
+            <button class="add-meal-btn" onclick="event.stopPropagation();openMealSheet({id:meal.id,name:meal.name,desc:meal.desc,price:meal.price,cal:meal.cal||0,img:meal.img})">+</button>
           </div>
         </div>
         <button class="fav-btn ${meal.fav ? 'active' : ''}" onclick="toggleFav(event,'${meal.id}')">
@@ -1535,6 +1822,374 @@
   if (menuBtn) {
     menuBtn.addEventListener('click', startNotifDemo);
   }
+
+})();
+// ══════════════════════════════════════════════════
+</script>
+
+
+<!-- ═══════════════ MEAL CUSTOMIZATION SHEET ═══════════════ -->
+<div class="meal-overlay" id="mealOverlay"></div>
+<div class="meal-sheet"   id="mealSheet">
+  <div class="meal-sheet-handle" id="mealHandle"></div>
+  <button class="meal-sheet-close" id="mealSheetClose">&#x2715;</button>
+  <img class="meal-sheet-img" id="mealSheetImg" src="" alt="">
+  <div class="meal-sheet-body" id="mealSheetBody">
+    <div class="meal-sheet-name" id="mealSheetName"></div>
+    <div class="meal-sheet-desc" id="mealSheetDesc"></div>
+    <div class="meal-sheet-meta">
+      <span class="meal-sheet-price" id="mealSheetBasePrice"></span>
+      <span class="meal-sheet-cal"   id="mealSheetCal"></span>
+    </div>
+    <div id="mealSections"></div>
+  </div>
+  <div class="meal-sheet-footer">
+    <div class="ms-qty">
+      <button class="ms-qty-btn" id="msQtyMinus">&#8722;</button>
+      <span   class="ms-qty-num" id="msQtyNum">1</span>
+      <button class="ms-qty-btn" id="msQtyPlus">&#43;</button>
+    </div>
+    <button class="ms-add-btn" id="msAddBtn">
+      <span>إضافة للسلة</span>
+      <span id="msAddPrice"></span>
+    </button>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════ MEAL SHEET ENGINE ═══════════════
+(function() {
+
+  // ── Data structure (future: loaded from Admin API) ─────────────
+  // Each meal can have sections of types: 'radio', 'checkbox', 'cards', 'note'
+  // Admin controls: title, subtitle, required, min, max, options[]
+  const MEAL_SECTIONS_TEMPLATE = [
+    {
+      id: 'size',
+      title: 'الحجم',
+      subtitle: 'اختر حجماً واحداً',
+      type: 'radio',
+      required: true,
+      options: [
+        { id: 's1', label: 'فردي',  price: 0   },
+        { id: 's2', label: 'عائلي', price: 15  },
+        { id: 's3', label: 'كبير',  price: 28  },
+      ]
+    },
+    {
+      id: 'extras',
+      title: 'إضافات',
+      subtitle: 'اختر ما تريد (اختياري)',
+      type: 'checkbox',
+      required: false,
+      options: [
+        { id: 'e1', label: 'جبن إضافي',    price: 4  },
+        { id: 'e2', label: 'صلصة حارة',    price: 2  },
+        { id: 'e3', label: 'بيض مقلي',     price: 5  },
+        { id: 'e4', label: 'خبز إضافي',    price: 3  },
+      ]
+    },
+    {
+      id: 'drink',
+      title: 'المشروبات',
+      subtitle: 'أضف مشروبك (اختياري)',
+      type: 'radio',
+      required: false,
+      options: [
+        { id: 'd0', label: 'بدون مشروب',   price: 0  },
+        { id: 'd1', label: 'مياه',          price: 2  },
+        { id: 'd2', label: 'عصير طبيعي',   price: 8  },
+        { id: 'd3', label: 'كولا',          price: 5  },
+      ]
+    },
+    {
+      id: 'suggested',
+      title: 'يجي معاه كمان',
+      subtitle: '',
+      type: 'cards',
+      required: false,
+      options: [
+        { id: 'sg1', label: 'حمص',      price: 8,  img: 'pexels-majo-pip-3047358-4617831.jpg'          },
+        { id: 'sg2', label: 'تبولة',    price: 6,  img: 'pexels-dhiraj-jain-207743066-12737663.jpg'   },
+        { id: 'sg3', label: 'فتوش',     price: 7,  img: 'pexels-ali-dashti-506667798-26341209.jpg'    },
+        { id: 'sg4', label: 'شوربة',    price: 10, img: 'pexels-manases-37215010.jpg'                 },
+      ]
+    },
+    {
+      id: 'note',
+      title: 'ملاحظات خاصة',
+      subtitle: 'أي تعليمات للمطبخ',
+      type: 'note',
+      required: false,
+      options: []
+    },
+  ];
+
+  // ── State ──────────────────────────────────────────────────────
+  let currentMeal   = null;
+  let selections    = {};   // { sectionId: Set of optionIds }
+  let quantity      = 1;
+  let startY        = 0;
+  let currentY      = 0;
+  let dragging      = false;
+
+  // ── Elements ───────────────────────────────────────────────────
+  const overlay   = document.getElementById('mealOverlay');
+  const sheet     = document.getElementById('mealSheet');
+  const handle    = document.getElementById('mealHandle');
+  const closeBtn  = document.getElementById('mealSheetClose');
+  const body      = document.getElementById('mealSheetBody');
+  const sections  = document.getElementById('mealSections');
+  const qtyMinus  = document.getElementById('msQtyMinus');
+  const qtyPlus   = document.getElementById('msQtyPlus');
+  const qtyNum    = document.getElementById('msQtyNum');
+  const addBtn    = document.getElementById('msAddBtn');
+  const addPrice  = document.getElementById('msAddPrice');
+
+  // ── Open sheet ─────────────────────────────────────────────────
+  window.openMealSheet = function(meal) {
+    currentMeal = meal;
+    quantity    = 1;
+    selections  = {};
+
+    // Populate header
+    document.getElementById('mealSheetImg').src       = meal.img || '';
+    document.getElementById('mealSheetName').textContent = meal.name || '';
+    document.getElementById('mealSheetDesc').textContent = meal.desc || '';
+    document.getElementById('mealSheetBasePrice').textContent = meal.price + ' ر.س';
+    document.getElementById('mealSheetCal').textContent = (meal.cal || '') + ' سعرة حرارية';
+
+    // Build sections (future: meal.sections from API, fallback to template)
+    const sectionsData = meal.sections || MEAL_SECTIONS_TEMPLATE;
+    renderSections(sectionsData);
+
+    qtyNum.textContent = '1';
+    updatePrice();
+
+    overlay.classList.add('show');
+    sheet.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  };
+
+  // ── Render sections ────────────────────────────────────────────
+  function renderSections(sectionsData) {
+    sections.innerHTML = '';
+    sectionsData.forEach(sec => {
+      selections[sec.id] = new Set();
+      const el = document.createElement('div');
+      el.className = 'ms-section';
+
+      const badge = sec.required
+        ? '<span class="ms-required-badge">مطلوب</span>'
+        : '<span class="ms-optional-badge">اختياري</span>';
+
+      el.innerHTML = '<div class="ms-section-header">' +
+        '<div><div class="ms-section-title">' + sec.title + '</div>' +
+        (sec.subtitle ? '<div class="ms-section-sub">' + sec.subtitle + '</div>' : '') +
+        '</div>' + badge + '</div>';
+
+      if (sec.type === 'radio' || sec.type === 'checkbox') {
+        sec.options.forEach(opt => {
+          const row = document.createElement('div');
+          row.className = 'ms-option';
+          row.dataset.secId  = sec.id;
+          row.dataset.optId  = opt.id;
+          row.dataset.price  = opt.price;
+          row.dataset.type   = sec.type;
+
+          const indicator = sec.type === 'radio'
+            ? '<div class="ms-option-dot"></div>'
+            : '<div class="ms-option-box"></div>';
+
+          row.innerHTML = indicator +
+            '<span class="ms-option-label">' + opt.label + '</span>' +
+            (opt.price > 0 ? '<span class="ms-option-price">+' + opt.price + ' ر.س</span>' : '<span class="ms-option-price"></span>');
+
+          row.addEventListener('click', () => onOptionClick(row, sec, opt));
+          el.appendChild(row);
+        });
+
+      } else if (sec.type === 'cards') {
+        const cards = document.createElement('div');
+        cards.className = 'ms-cards';
+        sec.options.forEach(opt => {
+          const card = document.createElement('div');
+          card.className = 'ms-card';
+          card.dataset.secId = sec.id;
+          card.dataset.optId = opt.id;
+          card.dataset.price = opt.price;
+          card.innerHTML =
+            '<img src="' + (opt.img || '') + '" alt="' + opt.label + '">' +
+            '<div class="ms-card-name">' + opt.label + '</div>' +
+            '<div class="ms-card-price">+' + opt.price + ' ر.س</div>';
+          card.addEventListener('click', () => {
+            card.classList.toggle('selected');
+            if (card.classList.contains('selected')) selections[sec.id].add(opt.id + ':' + opt.price);
+            else selections[sec.id].delete(opt.id + ':' + opt.price);
+            updatePrice();
+          });
+          cards.appendChild(card);
+        });
+        el.appendChild(cards);
+
+      } else if (sec.type === 'note') {
+        const noteWrap = document.createElement('div');
+        noteWrap.className = 'ms-note';
+        noteWrap.innerHTML = '<textarea placeholder="مثال: بدون بصل، صلصة على الجانب..."></textarea>';
+        el.appendChild(noteWrap);
+      }
+
+      sections.appendChild(el);
+    });
+  }
+
+  // ── Option click ───────────────────────────────────────────────
+  function onOptionClick(row, sec, opt) {
+    if (sec.type === 'radio') {
+      // Deselect all in section
+      document.querySelectorAll('[data-sec-id="' + sec.id + '"]').forEach(r => {
+        r.classList.remove('selected');
+        const dot = r.querySelector('.ms-option-dot');
+        if (dot) dot.classList.remove('checked');
+      });
+      selections[sec.id] = new Set([opt.id + ':' + opt.price]);
+      row.classList.add('selected');
+      const dot = row.querySelector('.ms-option-dot');
+      if (dot) dot.classList.add('checked');
+    } else {
+      const key = opt.id + ':' + opt.price;
+      if (selections[sec.id].has(key)) {
+        selections[sec.id].delete(key);
+        row.classList.remove('selected');
+        const box = row.querySelector('.ms-option-box');
+        if (box) box.classList.remove('checked');
+      } else {
+        selections[sec.id].add(key);
+        row.classList.add('selected');
+        const box = row.querySelector('.ms-option-box');
+        if (box) box.classList.add('checked');
+      }
+    }
+    updatePrice();
+  }
+
+  // ── Price calculation ──────────────────────────────────────────
+  function calcExtras() {
+    let extra = 0;
+    Object.values(selections).forEach(set => {
+      set.forEach(val => {
+        const price = parseFloat(val.split(':')[1]) || 0;
+        extra += price;
+      });
+    });
+    return extra;
+  }
+
+  function updatePrice() {
+    if (!currentMeal) return;
+    const total = (currentMeal.price + calcExtras()) * quantity;
+    addPrice.textContent = total.toFixed(0) + ' ر.س';
+    qtyNum.textContent   = quantity;
+  }
+
+  // ── Quantity ───────────────────────────────────────────────────
+  qtyMinus.addEventListener('click', () => {
+    if (quantity > 1) { quantity--; updatePrice(); }
+  });
+  qtyPlus.addEventListener('click', () => {
+    quantity++;
+    updatePrice();
+  });
+
+  // ── Close ──────────────────────────────────────────────────────
+  function closeSheet() {
+    overlay.classList.remove('show');
+    sheet.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeSheet);
+  overlay.addEventListener('click', closeSheet);
+
+  // ── Drag to close ──────────────────────────────────────────────
+  function dragStart(e) {
+    startY   = e.touches ? e.touches[0].clientY : e.clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }
+  function dragMove(e) {
+    if (!dragging) return;
+    currentY = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+    if (currentY < 0) currentY = 0;
+    sheet.style.transform  = 'translateY(' + currentY + 'px)';
+    overlay.style.opacity  = Math.max(0, 1 - currentY / 300);
+  }
+  function dragEnd() {
+    if (!dragging) return;
+    dragging = false;
+    if (currentY > 120) {
+      sheet.style.transition = 'transform 0.3s ease';
+      sheet.style.transform  = 'translateY(110%)';
+      overlay.style.opacity  = '0';
+      overlay.style.pointerEvents = 'none';
+      setTimeout(() => {
+        closeSheet();
+        sheet.style.transform  = '';
+        sheet.style.transition = '';
+        overlay.style.opacity  = '';
+        overlay.style.pointerEvents = '';
+      }, 300);
+    } else {
+      sheet.style.transition = 'transform 0.35s ease';
+      sheet.style.transform  = 'translateY(0)';
+      overlay.style.opacity  = '';
+      setTimeout(() => { sheet.style.transition = ''; }, 350);
+    }
+    currentY = 0;
+  }
+
+  handle.addEventListener('touchstart', dragStart, { passive: true });
+  handle.addEventListener('touchmove',  dragMove,  { passive: true });
+  handle.addEventListener('touchend',   dragEnd);
+  handle.addEventListener('mousedown',  dragStart);
+  window.addEventListener('mousemove',  dragMove);
+  window.addEventListener('mouseup',    dragEnd);
+
+  // ── Add to cart ────────────────────────────────────────────────
+  addBtn.addEventListener('click', () => {
+    // Future: send order data to backend
+    const order = {
+      meal:       currentMeal,
+      quantity:   quantity,
+      extras:     calcExtras(),
+      total:      (currentMeal.price + calcExtras()) * quantity,
+      selections: Object.fromEntries(
+        Object.entries(selections).map(([k, v]) => [k, [...v]])
+      ),
+    };
+    console.log('ORDER:', order);
+    closeSheet();
+    // Future: updateCart(order)
+  });
+
+  // ── Wire up + buttons on meal cards ───────────────────────────
+  // Called after cards are rendered in the page
+  window.initMealButtons = function() {
+    document.querySelectorAll('.meal-add-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const card = btn.closest('[data-meal]');
+        if (!card) return;
+        try {
+          const meal = JSON.parse(card.dataset.meal);
+          openMealSheet(meal);
+        } catch(err) {
+          console.error('meal data error', err);
+        }
+      });
+    });
+  };
 
 })();
 // ══════════════════════════════════════════════════

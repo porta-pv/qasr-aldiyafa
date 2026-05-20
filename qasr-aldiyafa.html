@@ -1191,7 +1191,7 @@
         </div>
       </div>
 
-      <div class="onb-slide onb-slide-delivery">
+      <div class="onb-slide onb-slide-delivery" style="display:none">
         <img class="onb-delivery-img" src="./delivery-hero.png" alt="مندوب التوصيل">
         <div class="onb-delivery-overlay"></div>
         <div class="onb-delivery-content">
@@ -1201,7 +1201,7 @@
         </div>
       </div>
 
-      <div class="onb-slide">
+      <div class="onb-slide" style="display:none">
         <div class="onb-visual onb-visual-3">
           <div class="onb-visual-emoji">⭐</div>
         </div>
@@ -1216,8 +1216,8 @@
   <div class="onb-footer">
     <div class="onb-dots">
       <div class="onb-dot active" onclick="goToSlide(0)"></div>
-      <div class="onb-dot" onclick="goToSlide(1)"></div>
-      <div class="onb-dot" onclick="goToSlide(2)"></div>
+      <div class="onb-dot" onclick="goToSlide(1)" style="display:none"></div>
+      <div class="onb-dot" onclick="goToSlide(2)" style="display:none"></div>
     </div>
     <button class="onb-btn" id="onbNextBtn" onclick="nextSlide()">
       التالي &larr;
@@ -1362,7 +1362,7 @@
 
 <script>
   let currentSlide = 0;
-  const totalSlides = 3;
+  const totalSlides = 1;
 
   // Splash
   setTimeout(() => {

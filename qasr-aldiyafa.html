@@ -217,19 +217,26 @@
     gap: 0;
   }
 
-  /* كل عمود يمتد رأسياً بلا فراغات */
+  /* كل عمود يمتد رأسياً */
   .food-col {
     flex: 1;
     display: flex;
     flex-direction: column;
     will-change: transform;
   }
-  .food-col img {
+  /* غلاف كل صورة — padding متساوٍ يضمن ارتفاع الخانة = عرض العمود → حلقة سلسة */
+  .food-slot {
+    flex-shrink: 0;
+    padding: 4px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .food-slot img {
     width: 100%;
     display: block;
-    flex-shrink: 0;
     object-fit: cover;
     aspect-ratio: 1 / 1;
+    border-radius: 10px;
   }
 
   /* العمود الأول والثالث يصعدان */
@@ -1488,10 +1495,13 @@
       if (!col) return;
       for (let r = 0; r < 10; r++) {
         sources.forEach(src => {
+          const slot = document.createElement('div');
+          slot.className = 'food-slot';
           const img = document.createElement('img');
           img.src = src;
           img.alt = '';
-          col.appendChild(img);
+          slot.appendChild(img);
+          col.appendChild(slot);
         });
       }
     });

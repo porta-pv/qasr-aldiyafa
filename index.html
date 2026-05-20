@@ -198,6 +198,82 @@
     border-radius:50%; border:1px solid rgba(184,148,42,0.2);
   }
   .onb-visual-emoji { font-size:72px; line-height:1; }
+
+  /* ===== SLIDE 1 HERO — أعمدة الصور المتحركة ===== */
+  .onb-slide-hero {
+    position: relative;
+    padding: 0;
+    gap: 0;
+    justify-content: flex-end;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  /* الحاوية الخلفية — تملأ الشريحة كاملة */
+  .food-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    gap: 0;
+  }
+
+  /* كل عمود يمتد رأسياً بلا فراغات */
+  .food-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+  }
+  .food-col img {
+    width: 100%;
+    display: block;
+    flex-shrink: 0;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* العمود الأول والثالث يصعدان */
+  .food-col-up {
+    animation: foodUp 9s linear infinite;
+  }
+  /* العمود الثاني ينزل */
+  .food-col-down {
+    animation: foodDown 11s linear infinite;
+  }
+
+  @keyframes foodUp {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+  @keyframes foodDown {
+    0%   { transform: translateY(-50%); }
+    100% { transform: translateY(0); }
+  }
+
+  /* تدرج أبيض — شفاف من الأعلى، أبيض كامل في الأسفل */
+  .food-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 62%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(248,244,237,0.55) 35%,
+      rgba(248,244,237,0.92) 60%,
+      var(--cream) 80%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* النص في الأسفل فوق التدرج */
+  .onb-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 0 32px 28px;
+    text-align: center;
+  }
   .onb-label {
     font-size:11px; font-weight:700; letter-spacing:3px;
     color:var(--gold); text-transform:uppercase;
@@ -1045,13 +1121,21 @@
   <div class="onb-slides-wrapper">
     <div class="onb-slides" id="onbSlides">
 
-      <div class="onb-slide">
-        <div class="onb-visual onb-visual-1">
-          <div class="onb-visual-emoji">🍽️</div>
+      <div class="onb-slide onb-slide-hero">
+        <!-- 3 أعمدة صور متحركة تملأ الخلفية -->
+        <div class="food-bg">
+          <div class="food-col food-col-up"   id="foodCol1"></div>
+          <div class="food-col food-col-down" id="foodCol2"></div>
+          <div class="food-col food-col-up"   id="foodCol3"></div>
         </div>
-        <div class="onb-label">مرحباً بك</div>
-        <div class="onb-title">تجربة طعام<br>لا تُنسى</div>
-        <div class="onb-desc">نقدّم لك أرقى الأطباق العربية والعالمية في أجواء فاخرة تليق بضيوفنا الكرام</div>
+        <!-- تدرج أبيض يغطي النصف السفلي -->
+        <div class="food-overlay"></div>
+        <!-- المحتوى فوق الطبقة البيضاء -->
+        <div class="onb-hero-content">
+          <div class="onb-label">مرحباً بك</div>
+          <div class="onb-title">تجربة طعام<br>لا تُنسى</div>
+          <div class="onb-desc">نقدّم لك أرقى الأطباق العربية والعالمية في أجواء فاخرة تليق بضيوفنا الكرام</div>
+        </div>
       </div>
 
       <div class="onb-slide">
@@ -1389,6 +1473,29 @@
   // ====== INIT ======
   renderCategories();
   renderMeals();
+
+  // ====== FOOD BG COLUMNS (onboarding slide 1) ======
+  (function buildFoodBg() {
+    const imgs = APP_DATA.meals.map(m => m.img);
+    if (!imgs.length) return;
+    const colSources = [
+      [imgs[0], imgs[3] || imgs[0]],
+      [imgs[1] || imgs[0], imgs[4] || imgs[1] || imgs[0]],
+      [imgs[2] || imgs[0], imgs[5] || imgs[2] || imgs[0]],
+    ];
+    colSources.forEach((sources, i) => {
+      const col = document.getElementById('foodCol' + (i + 1));
+      if (!col) return;
+      for (let r = 0; r < 10; r++) {
+        sources.forEach(src => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = '';
+          col.appendChild(img);
+        });
+      }
+    });
+  })();
 
 
   // ====== HERO CAROUSEL — infinite loop + swipe ======

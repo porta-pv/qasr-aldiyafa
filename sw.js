@@ -1,5 +1,5 @@
-const CACHE = 'qasr-v3';
-const ASSETS = ['./', './index.html', './icon.png', './icon-192.png', './icon-512.png', './icon-180.png', './manifest.json', './favicon.ico'];
+const CACHE = 'qasr-v4';
+const ASSETS = ['./', './index.html', './icon.png', './icon-192.png', './icon-512.png', './icon-180.png', './manifest.json', './favicon.ico', './delivery-hero.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));

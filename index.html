@@ -282,6 +282,51 @@
     padding: 0 32px 28px;
     text-align: center;
   }
+
+  /* ===== SLIDE 2 — صورة المندوب ===== */
+  .onb-slide-delivery {
+    position: relative;
+    padding: 0;
+    justify-content: flex-end;
+    align-items: stretch;
+    overflow: hidden;
+    background: linear-gradient(170deg, #1A1035 0%, var(--navy) 45%, #2A1A08 100%);
+  }
+  .onb-delivery-img {
+    position: absolute;
+    bottom: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 340px;
+    object-fit: contain;
+    z-index: 1;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45));
+  }
+  .onb-delivery-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(13,18,40,0.7) 35%,
+      rgba(13,18,40,0.97) 65%,
+      #0D1228 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+  .onb-delivery-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    padding: 0 32px 28px;
+    text-align: center;
+  }
+  .onb-slide-delivery .onb-label { color: var(--gold-light); }
+  .onb-slide-delivery .onb-title { color: var(--cream); }
+  .onb-slide-delivery .onb-desc  { color: rgba(248,244,237,0.72); }
+
   .onb-label {
     font-size:11px; font-weight:700; letter-spacing:3px;
     color:var(--gold); text-transform:uppercase;
@@ -1146,13 +1191,14 @@
         </div>
       </div>
 
-      <div class="onb-slide">
-        <div class="onb-visual onb-visual-2">
-          <div class="onb-visual-emoji">📅</div>
+      <div class="onb-slide onb-slide-delivery">
+        <img class="onb-delivery-img" src="./delivery-hero.png" alt="مندوب التوصيل">
+        <div class="onb-delivery-overlay"></div>
+        <div class="onb-delivery-content">
+          <div class="onb-label">توصيل سريع</div>
+          <div class="onb-title">نوصّل إليك<br>أينما كنت</div>
+          <div class="onb-desc">طلبك يصلك ساخناً وفي الوقت المحدد — مندوبونا في خدمتك على مدار اليوم</div>
         </div>
-        <div class="onb-label">الحجز السهل</div>
-        <div class="onb-title">احجز طاولتك<br>بضغطة واحدة</div>
-        <div class="onb-desc">اختر موعدك وعدد الأشخاص وسنرتب لك كل شيء — من الترحيب حتى آخر لحظة</div>
       </div>
 
       <div class="onb-slide">

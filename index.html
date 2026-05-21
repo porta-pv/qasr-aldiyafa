@@ -1394,6 +1394,8 @@
     setTimeout(() => {
       document.getElementById('home').classList.add('visible');
     }, 100);
+    // تشغيل عداد نافذة التثبيت بعد انتهاء الـ Onboarding
+    if (typeof window.triggerPwaPrompt === 'function') window.triggerPwaPrompt();
   }
 
   // ====== HOME PAGE ======
@@ -1919,8 +1921,10 @@
     }, 300);
   }
 
-  // إظهار النافذة بعد 4 ثوانٍ من دخول الصفحة الرئيسية
-  setTimeout(showSheet, 4000);
+  // تُشغَّل من goHome() بعد انتهاء الـ Onboarding — 20 ثانية من تفاعل حقيقي
+  window.triggerPwaPrompt = function() {
+    setTimeout(showSheet, 20000);
+  };
 
   overlay.addEventListener('click', hideSheet);
   laterBtn.addEventListener('click', hideSheet);

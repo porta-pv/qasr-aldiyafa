@@ -1680,134 +1680,203 @@
 <!-- ═══════════════ PWA INSTALL PROMPT ═══════════════ -->
 <style>
 .pwa-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(13,26,46,0.55);
-  z-index: 9000;
-  opacity: 0;
-  pointer-events: none;
+  position: fixed; inset: 0;
+  background: rgba(13,26,46,0.6);
+  z-index: 9000; opacity: 0; pointer-events: none;
   transition: opacity 0.35s ease;
+  backdrop-filter: blur(2px);
 }
 .pwa-overlay.show { opacity: 1; pointer-events: all; }
 
 .pwa-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
+  position: fixed; bottom: 0; left: 0; right: 0;
   background: #fff;
-  border-radius: 22px 22px 0 0;
+  border-radius: 28px 28px 0 0;
   z-index: 9001;
-  padding: 10px 22px 32px;
+  padding: 0 0 env(safe-area-inset-bottom, 16px);
   transform: translateY(110%);
-  transition: transform 0.4s cubic-bezier(.32,1.2,.42,1);
-  box-shadow: 0 -8px 40px rgba(13,26,46,0.18);
+  transition: transform 0.45s cubic-bezier(.32,1.2,.42,1);
+  box-shadow: 0 -12px 48px rgba(13,26,46,0.2);
   font-family: 'Tajawal', sans-serif;
   direction: rtl;
+  overflow: hidden;
 }
 .pwa-sheet.show { transform: translateY(0); }
 
-.pwa-handle {
-  width: 40px; height: 4px;
-  background: #DDD;
-  border-radius: 4px;
-  margin: 0 auto 18px;
+/* الشريط العلوي الذهبي */
+.pwa-top-bar {
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+}
+
+.pwa-handle-wrap {
+  padding: 10px 0 0;
+  display: flex; justify-content: center;
   cursor: grab;
 }
-
-.pwa-body {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
+.pwa-handle {
+  width: 36px; height: 4px;
+  background: #DDD; border-radius: 4px;
 }
 
+/* رأس النافذة: أيقونة + نص */
+.pwa-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 24px 16px;
+}
+.pwa-icon-wrap {
+  position: relative; flex-shrink: 0;
+}
 .pwa-icon {
-  width: 58px; height: 58px;
-  border-radius: 14px;
+  width: 68px; height: 68px;
+  border-radius: 18px;
   object-fit: contain;
-  border: 1px solid #EDE6D8;
-  flex-shrink: 0;
-  background: #F8F4ED;
-  padding: 4px;
+  box-shadow: 0 4px 16px rgba(184,148,42,0.28);
+}
+.pwa-icon-badge {
+  position: absolute; bottom: -4px; left: -4px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+  font-size: 11px;
+}
+.pwa-header-text h3 {
+  font-size: 17px; font-weight: 800;
+  color: var(--navy); margin-bottom: 3px;
+}
+.pwa-header-text p {
+  font-size: 13px; color: var(--grey); line-height: 1.5;
 }
 
-.pwa-text h3 {
-  font-size: 16px;
-  font-weight: 800;
-  color: #1C1A2E;
-  margin-bottom: 4px;
+/* فاصل */
+.pwa-divider {
+  height: 1px; background: #EDE6D8; margin: 0 24px;
 }
 
-.pwa-text p {
-  font-size: 13px;
-  color: #8A9BAD;
-  line-height: 1.5;
+/* مميزات التطبيق */
+.pwa-features {
+  display: flex; flex-direction: column; gap: 0;
+  padding: 4px 24px 8px;
+}
+.pwa-feature {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid #F5F0E8;
+}
+.pwa-feature:last-child { border-bottom: none; }
+.pwa-feature-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.pwa-feature-icon.navy { background: rgba(13,33,55,0.07); }
+.pwa-feature-icon.gold { background: rgba(184,148,42,0.12); }
+.pwa-feature-icon.green { background: rgba(39,174,96,0.1); }
+.pwa-feature-text strong {
+  display: block; font-size: 14px; font-weight: 700; color: var(--navy);
+}
+.pwa-feature-text span {
+  font-size: 12px; color: var(--grey); line-height: 1.4;
 }
 
+/* تعليمات iOS / Android */
+.pwa-instructions {
+  margin: 0 24px 12px;
+  background: #F8F4ED; border-radius: 14px;
+  padding: 14px 16px; display: none;
+}
+.pwa-instructions.show { display: block; }
+.pwa-instructions-title {
+  font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px;
+}
+.pwa-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 8px;
+}
+.pwa-step:last-child { margin-bottom: 0; }
+.pwa-step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.pwa-step-text { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+.pwa-step-text strong { color: var(--navy); }
+
+/* أزرار */
 .pwa-actions {
-  display: flex;
-  gap: 10px;
+  padding: 8px 24px 24px;
+  display: flex; flex-direction: column; gap: 10px;
 }
-
 .pwa-btn-install {
   width: 100%;
-  background: linear-gradient(135deg, #B8942A, #D4AE44);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
-  font-family: 'Tajawal', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #fff; border: none; border-radius: 14px;
+  padding: 15px; font-family: 'Tajawal', sans-serif;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(184,148,42,0.35);
+  transition: opacity 0.2s, transform 0.15s;
 }
-.pwa-btn-install:hover { opacity: 0.9; }
+.pwa-btn-install:active { opacity: 0.88; transform: scale(0.98); }
 
 .pwa-btn-later {
-  background: #F8F4ED;
-  color: #8A9BAD;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 18px;
-  font-family: 'Tajawal', sans-serif;
-  font-size: 14px;
-  cursor: pointer;
+  background: none; border: none; color: var(--grey);
+  font-family: 'Tajawal', sans-serif; font-size: 14px;
+  cursor: pointer; padding: 4px; text-align: center;
 }
-
-/* iOS instructions */
-.pwa-ios {
-  background: #F8F4ED;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: #3A5570;
-  line-height: 1.8;
-  display: none;
-}
-.pwa-ios.show { display: block; }
-.pwa-ios strong { color: #1C1A2E; }
 </style>
 
 <div class="pwa-overlay" id="pwaOverlay"></div>
 <div class="pwa-sheet" id="pwaSheet">
-  <div class="pwa-handle"></div>
-  <div class="pwa-body">
-    <img class="pwa-icon" src="icon-192.png" style="border-radius:16px;" alt="قصر الضيافة">
-    <div class="pwa-text">
-      <h3>ثبّت تطبيق قصر الضيافة</h3>
-      <p>احصل على تجربة أسرع وأفضل مباشرة من شاشتك الرئيسية</p>
+  <div class="pwa-top-bar"></div>
+  <div class="pwa-handle-wrap">
+    <div class="pwa-handle"></div>
+  </div>
+
+  <div class="pwa-header">
+    <div class="pwa-icon-wrap">
+      <img class="pwa-icon" src="icon-192.png" alt="لمسات الضيافة">
+      <div class="pwa-icon-badge">✓</div>
+    </div>
+    <div class="pwa-header-text">
+      <h3>لمسات الضيافة</h3>
+      <p>أضف التطبيق لشاشتك الرئيسية للوصول السريع</p>
     </div>
   </div>
-  <div class="pwa-ios" id="pwaIos">
-    <strong>لتثبيت التطبيق على iPhone:</strong><br>
-    ١. اضغط على زر <strong>المشاركة</strong> &#x2197; في الأسفل<br>
-    ٢. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong><br>
-    ٣. اضغط <strong>تثبيت</strong>
+
+  <div class="pwa-divider"></div>
+
+  <div class="pwa-features">
+    <div class="pwa-feature">
+      <div class="pwa-feature-icon navy">⚡</div>
+      <div class="pwa-feature-text">
+        <strong>وصول فوري</strong>
+        <span>افتح التطبيق مباشرة بدون متصفح</span>
+      </div>
+    </div>
+    <div class="pwa-feature">
+      <div class="pwa-feature-icon gold">🔔</div>
+      <div class="pwa-feature-text">
+        <strong>إشعارات الطلبات</strong>
+        <span>تابع حالة طلبك لحظة بلحظة</span>
+      </div>
+    </div>
+    <div class="pwa-feature">
+      <div class="pwa-feature-icon green">📶</div>
+      <div class="pwa-feature-text">
+        <strong>يعمل بدون إنترنت</strong>
+        <span>تصفح القائمة حتى بدون اتصال</span>
+      </div>
+    </div>
   </div>
+
+  <div class="pwa-instructions" id="pwaIos"></div>
+
   <div class="pwa-actions">
-    <button class="pwa-btn-install" id="pwaInstallBtn">ثبّت التطبيق</button>
+    <button class="pwa-btn-install" id="pwaInstallBtn">تثبيت التطبيق</button>
+    <button class="pwa-btn-later" id="pwaLaterBtn">ليس الآن</button>
   </div>
 </div>
 
@@ -1816,9 +1885,9 @@
   const overlay    = document.getElementById('pwaOverlay');
   const sheet      = document.getElementById('pwaSheet');
   const installBtn = document.getElementById('pwaInstallBtn');
+  const laterBtn   = document.getElementById('pwaLaterBtn');
   const iosBox     = document.getElementById('pwaIos');
 
-  // [DEV MODE] Always show - remove this check in production
   let deferredPrompt = null;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
   const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
@@ -1834,30 +1903,24 @@
     sheet.classList.add('show');
   }
 
-  function hideSheet(animate) {
-    if (animate) {
-      sheet.style.transition = 'transform 0.3s ease';
-      sheet.style.transform  = 'translateY(110%)';
-      overlay.classList.remove('show');
-      overlay.style.opacity  = '';
-      overlay.style.pointerEvents = 'none';
-      setTimeout(() => {
-        sheet.classList.remove('show');
-        sheet.style.transform  = '';
-        sheet.style.transition = '';
-      }, 300);
-    } else {
-      overlay.classList.remove('show');
-      overlay.style.opacity  = '';
-      overlay.style.pointerEvents = 'none';
+  function hideSheet() {
+    sheet.style.transition = 'transform 0.3s ease';
+    sheet.style.transform  = 'translateY(110%)';
+    overlay.classList.remove('show');
+    setTimeout(() => {
       sheet.classList.remove('show');
-    }
+      sheet.style.transform  = '';
+      sheet.style.transition = '';
+    }, 300);
   }
 
-  // Always show after 3 seconds (dev mode)
-  setTimeout(showSheet, 3000);
+  // إظهار النافذة بعد 4 ثوانٍ من دخول الصفحة الرئيسية
+  setTimeout(showSheet, 4000);
 
-  // ── Drag to dismiss ──────────────────────────────────────────
+  overlay.addEventListener('click', hideSheet);
+  laterBtn.addEventListener('click', hideSheet);
+
+  // ── سحب للإغلاق ──────────────────────────────────────────────
   let startY = 0, currentY = 0, dragging = false;
 
   function onDragStart(e) {
@@ -1865,7 +1928,6 @@
     dragging = true;
     sheet.style.transition = 'none';
   }
-
   function onDragMove(e) {
     if (!dragging) return;
     currentY = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
@@ -1873,12 +1935,11 @@
     sheet.style.transform = 'translateY(' + currentY + 'px)';
     overlay.style.opacity = Math.max(0, 1 - currentY / 300);
   }
-
   function onDragEnd() {
     if (!dragging) return;
     dragging = false;
     if (currentY > 100) {
-      hideSheet(true);
+      hideSheet();
     } else {
       sheet.style.transition = 'transform 0.3s ease';
       sheet.style.transform  = 'translateY(0)';
@@ -1888,34 +1949,49 @@
     currentY = 0;
   }
 
-  // Touch events
-  sheet.addEventListener('touchstart', onDragStart, { passive: true });
-  sheet.addEventListener('touchmove',  onDragMove,  { passive: true });
-  sheet.addEventListener('touchend',   onDragEnd);
+  const handle = sheet.querySelector('.pwa-handle-wrap');
+  handle.addEventListener('touchstart', onDragStart, { passive: true });
+  handle.addEventListener('touchmove',  onDragMove,  { passive: true });
+  handle.addEventListener('touchend',   onDragEnd);
+  handle.addEventListener('mousedown',  onDragStart);
+  window.addEventListener('mousemove',  onDragMove);
+  window.addEventListener('mouseup',    onDragEnd);
 
-  // Mouse events (desktop testing)
-  sheet.addEventListener('mousedown', onDragStart);
-  window.addEventListener('mousemove', onDragMove);
-  window.addEventListener('mouseup',   onDragEnd);
-
-  // ── Install button ───────────────────────────────────────────
+  // ── زر التثبيت ───────────────────────────────────────────────
   installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       deferredPrompt = null;
-      if (outcome === 'accepted') hideSheet(true);
+      if (outcome === 'accepted') hideSheet();
     } else {
-      const androidMsg = '<strong>لتثبيت على Android:</strong><br>١. اضغط قائمة المتصفح <strong>&#8942;</strong> في الأعلى<br>٢. اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong><br>٣. اضغط <strong>تثبيت</strong>';
-      const iosMsg     = '<strong>لتثبيت على iPhone:</strong><br>١. اضغط <strong>الثلاث نقاط</strong> &#8942; في الأسفل<br>٢. اضغط <strong>مشاركة</strong><br>٣. اضغط <strong>عرض المزيد</strong><br>٤. اختر <strong>إضافة إلى الشاشة الرئيسية</strong>';
-      iosBox.innerHTML = isIOS ? iosMsg : androidMsg;
+      // عرض خطوات التثبيت اليدوي
+      const steps = isIOS
+        ? [
+            { n:'١', t:'اضغط زر <strong>المشاركة</strong> 󰈌 في شريط المتصفح السفلي' },
+            { n:'٢', t:'اختر <strong>إضافة إلى الشاشة الرئيسية</strong>' },
+            { n:'٣', t:'اضغط <strong>إضافة</strong> في الأعلى' },
+          ]
+        : [
+            { n:'١', t:'اضغط قائمة المتصفح <strong>⋮</strong> في الأعلى' },
+            { n:'٢', t:'اختر <strong>إضافة إلى الشاشة الرئيسية</strong>' },
+            { n:'٣', t:'اضغط <strong>تثبيت</strong>' },
+          ];
+      iosBox.innerHTML = `
+        <div class="pwa-instructions-title">${isIOS ? 'التثبيت على iPhone' : 'التثبيت على Android'}</div>
+        ${steps.map(s => `
+          <div class="pwa-step">
+            <div class="pwa-step-num">${s.n}</div>
+            <div class="pwa-step-text">${s.t}</div>
+          </div>`).join('')}
+      `;
       iosBox.classList.add('show');
-      installBtn.textContent = 'فهمت';
-      installBtn.onclick = () => hideSheet(true);
+      installBtn.textContent = 'فهمت، شكراً';
+      installBtn.onclick = hideSheet;
     }
   });
 
-  // Register service worker
+  // تسجيل الـ Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});

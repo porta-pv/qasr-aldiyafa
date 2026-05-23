@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لمسات الضيافة — عامل التوصيل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ══ نفس متغيرات صفحة العميل بالضبط ══ */
+  :root {
+    --navy:        #0D2137;
+    --navy-mid:    #1A3A56;
+    --navy-light:  #264D6E;
+    --gold:        #B8942A;
+    --gold-light:  #D4AE44;
+    --gold-pale:   #F0D980;
+    --cream:       #F8F4ED;
+    --cream-dark:  #EDE6D8;
+    --grey:        #8A9BAD;
+    --grey-light:  #C8D4DC;
+    --white:       #FFFFFF;
+    --text-dark:   #0D2137;
+    --text-mid:    #3A5570;
+    --shadow:      0 8px 40px rgba(13,33,55,0.18);
+    --shadow-gold: 0 4px 24px rgba(184,148,42,0.22);
+    --red-accent:  #B52A24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: #F5F5F5;
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 32px;
+  }
+
+  /* ══ HEADER — نيفي مع نفس shadow صفحة العميل ══ */
+  .header {
+    background: var(--navy);
+    padding: 48px 16px 20px;
+    box-shadow: 0 2px 12px rgba(13,33,55,0.25);
+  }
+  .header-top {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .worker-info { display: flex; align-items: center; gap: 12px; }
+  .worker-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: white;
+    border: 2px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-gold);
+  }
+  .worker-name  { font-size: 16px; font-weight: 700; color: white; }
+  .worker-role  { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  /* Status toggle */
+  .status-toggle {
+    display: flex; background: rgba(255,255,255,0.1);
+    border-radius: 24px; padding: 3px; gap: 2px;
+  }
+  .status-btn {
+    border: none; cursor: pointer; border-radius: 20px;
+    padding: 6px 12px; font-family: 'Tajawal', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: rgba(255,255,255,0.55); background: transparent; transition: all 0.2s;
+  }
+  .status-btn.active-available { background: #27AE60; color: white; }
+  .status-btn.active-busy      { background: #E67E22; color: white; }
+  .status-btn.active-off       { background: var(--red-accent); color: white; }
+
+  /* Stats chips */
+  .header-stats { display: flex; gap: 10px; }
+  .stat-chip {
+    flex: 1; background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-chip-num   { font-size: 20px; font-weight: 800; color: var(--gold-light); }
+  .stat-chip-label { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.3; }
+
+  /* ══ SECTION TITLE — نفس صفحة العميل ══ */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 16px 10px;
+  }
+  .section-title {
+    font-size: 17px; font-weight: 800;
+    color: var(--navy);
+  }
+
+  /* ══ ORDER CARD — نفس meal-card بحجم أكبر ══ */
+  .order-card {
+    margin: 0 16px 4px;
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .order-card-header {
+    background: var(--navy);
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .order-card-title  { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
+  .order-number      { font-size: 17px; font-weight: 800; color: var(--gold-light); }
+  .order-status-badge {
+    background: rgba(255,255,255,0.12); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #2ECC71; animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.5; transform:scale(1.3); }
+  }
+  .order-card-body { padding: 14px 16px; }
+
+  /* Customer row */
+  .customer-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 12px; margin-bottom: 12px;
+    border-bottom: 1px solid var(--cream-dark);
+  }
+  .customer-info { display: flex; align-items: center; gap: 10px; }
+  .customer-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--cream); border: 1px solid var(--cream-dark);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .customer-icon svg { width: 18px; height: 18px; }
+  .customer-name  { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+  .customer-label { font-size: 11px; color: var(--grey); margin-top: 1px; }
+  .order-time {
+    font-size: 11px; color: var(--grey);
+    display: flex; align-items: center; gap: 4px;
+    background: var(--cream); padding: 4px 10px;
+    border-radius: 20px; border: 1px solid var(--cream-dark);
+  }
+
+  /* Address row */
+  .address-row {
+    background: var(--cream); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--cream-dark);
+  }
+  .address-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .address-icon svg { width: 16px; height: 16px; }
+  .address-text {
+    flex: 1; font-size: 13px; font-weight: 600;
+    color: var(--text-dark); line-height: 1.5;
+  }
+  .map-btn {
+    background: var(--navy); color: white;
+    border: none; cursor: pointer; border-radius: 8px;
+    padding: 7px 12px; font-family: 'Tajawal', sans-serif;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+    text-decoration: none; transition: opacity 0.2s; flex-shrink: 0;
+  }
+  .map-btn:hover { opacity: 0.85; }
+  .map-btn svg { width: 13px; height: 13px; }
+
+  /* Items */
+  .items-title { font-size: 12px; font-weight: 700; color: var(--grey); margin-bottom: 6px; }
+  .items-list  { list-style: none; margin-bottom: 16px; }
+  .items-list li {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 0; border-bottom: 1px dashed var(--cream-dark); font-size: 13px;
+  }
+  .items-list li:last-child { border-bottom: none; }
+  .item-name { color: var(--text-mid); font-weight: 500; }
+  .item-qty {
+    background: var(--cream); color: var(--navy);
+    border: 1px solid var(--cream-dark);
+    font-size: 12px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  /* Action buttons — نفس add-meal-btn وonb-btn */
+  .action-row { display: flex; gap: 10px; }
+  .btn-call {
+    flex: 1; height: 46px; background: var(--navy); color: white;
+    border: none; cursor: pointer; border-radius: 10px;
+    font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    text-decoration: none; transition: opacity 0.2s;
+  }
+  .btn-call svg { width: 17px; height: 17px; }
+  .btn-call:hover { opacity: 0.85; }
+
+  .btn-whatsapp {
+    flex: 1; height: 46px; background: #25D366; color: white;
+    border: none; cursor: pointer; border-radius: 10px;
+    font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    text-decoration: none; transition: opacity 0.2s;
+  }
+  .btn-whatsapp svg { width: 17px; height: 17px; }
+  .btn-whatsapp:hover { opacity: 0.85; }
+
+  /* زر "تم التسليم" — نفس gold-btn في صفحة العميل */
+  .btn-delivered {
+    width: 100%; height: 52px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: white; border: none; cursor: pointer; border-radius: 14px;
+    font-family: 'Tajawal', sans-serif; font-size: 17px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 12px; transition: all 0.25s;
+    box-shadow: var(--shadow-gold);
+  }
+  .btn-delivered svg { width: 20px; height: 20px; }
+  .btn-delivered:hover  { box-shadow: 0 8px 32px rgba(184,148,42,0.4); transform: translateY(-1px); }
+  .btn-delivered:active { transform: scale(0.98); }
+
+  /* ══ UPCOMING CARDS — نفس meal-card ══ */
+  .upcoming-list { margin: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+  .upcoming-card {
+    background: white; border-radius: 10px;
+    padding: 12px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .upcoming-card:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+  .upcoming-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-waiting { background: var(--grey-light); }
+  .dot-ready   { background: #27AE60; }
+  .dot-transit { background: var(--gold); }
+
+  .upcoming-info { flex: 1; min-width: 0; }
+  .upcoming-num  { font-size: 11px; color: var(--grey); font-weight: 700; }
+  .upcoming-name {
+    font-size: 14px; font-weight: 700; color: var(--text-dark);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .upcoming-addr {
+    font-size: 11px; color: var(--grey); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .upcoming-badge {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-waiting { background: var(--cream); color: var(--grey); border: 1px solid var(--cream-dark); }
+  .badge-ready   { background: #EAFAF1; color: #1E8449; }
+  .badge-transit { background: #FAF3E0; color: var(--gold); }
+
+  /* ══ SUMMARY — نيفي داكن مع ذهبي ══ */
+  .summary-card {
+    margin: 0 16px; background: var(--navy);
+    border-radius: 12px; padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .summary-title {
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 16px; text-align: center;
+  }
+  .summary-stats { display: flex; justify-content: space-around; }
+  .summary-stat  { text-align: center; }
+  .summary-num   { font-size: 32px; font-weight: 900; color: var(--gold-light); line-height: 1; }
+  .summary-label { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+  .summary-divider { width: 1px; background: rgba(255,255,255,0.1); align-self: stretch; }
+
+  /* ══ EMPTY STATE ══ */
+  .empty-state {
+    margin: 0 16px; background: white; border-radius: 10px;
+    padding: 40px 20px; text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .empty-icon {
+    width: 60px; height: 60px; background: var(--cream);
+    border: 1px solid var(--cream-dark); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+  }
+  .empty-icon svg { width: 28px; height: 28px; }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+  .empty-sub   { font-size: 13px; color: var(--grey); }
+
+  /* ══ TOAST — نفس صفحة العميل ══ */
+  .toast {
+    position: fixed; bottom: 82px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy); color: white;
+    padding: 10px 22px; border-radius: 10px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 9999; white-space: nowrap;
+    border-right: 3px solid var(--red-accent);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="header">
+  <div class="header-top">
+    <div class="worker-info">
+      <div class="worker-avatar" id="workerAvatar">م</div>
+      <div>
+        <div class="worker-name" id="workerName">محمد العمري</div>
+        <div class="worker-role">عامل توصيل</div>
+      </div>
+    </div>
+    <div class="status-toggle">
+      <button class="status-btn active-available" data-status="available" onclick="setStatus(this)">متاح</button>
+      <button class="status-btn" data-status="busy" onclick="setStatus(this)">مشغول</button>
+      <button class="status-btn" data-status="off" onclick="setStatus(this)">إجازة</button>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-chip">
+      <div class="stat-chip-num" id="doneCount">٥</div>
+      <div class="stat-chip-label">طلبات<br>منجزة</div>
+    </div>
+    <div class="stat-chip">
+      <div class="stat-chip-num" id="pendingCount">٢</div>
+      <div class="stat-chip-label">طلبات<br>قادمة</div>
+    </div>
+    <div class="stat-chip">
+      <div class="stat-chip-num" id="cancelCount">٠</div>
+      <div class="stat-chip-label">طلبات<br>ملغاة</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ CURRENT ORDER ═══════ -->
+<div class="section-head">
+  <div class="section-title">الطلب الحالي</div>
+</div>
+
+<div class="order-card" id="currentOrderCard">
+  <div class="order-card-header">
+    <div>
+      <div class="order-card-title">رقم الطلب</div>
+      <div class="order-number">#١٠٢٤</div>
+    </div>
+    <div class="order-status-badge">
+      <div class="pulse"></div>
+      قيد التوصيل
+    </div>
+  </div>
+  <div class="order-card-body">
+
+    <!-- Customer -->
+    <div class="customer-row">
+      <div class="customer-info">
+        <div class="customer-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0D2137" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="customer-name" id="customerName">أح••• الش•••</div>
+          <div class="customer-label">العميل</div>
+        </div>
+      </div>
+      <div class="order-time">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+        </svg>
+        منذ ٨ دقائق
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="address-row">
+      <div class="address-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+      </div>
+      <div class="address-text" id="deliveryAddress">حي النزهة، شارع الملك فهد<br>بجانب مسجد الرحمة</div>
+      <a class="map-btn" id="mapBtn" href="#" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <polygon points="3,6 9,3 15,6 21,3 21,18 15,21 9,18 3,21"/>
+          <line x1="9" y1="3" x2="9" y2="18"/>
+          <line x1="15" y1="6" x2="15" y2="21"/>
+        </svg>
+        الخريطة
+      </a>
+    </div>
+
+    <!-- Items -->
+    <div class="items-title">محتوى الطلب</div>
+    <ul class="items-list" id="orderItems">
+      <li><span class="item-name">برجر دجاج مقرمش</span><span class="item-qty">× ٢</span></li>
+      <li><span class="item-name">عصير برتقال طازج</span><span class="item-qty">× ١</span></li>
+      <li><span class="item-name">بطاطس مقلية كبيرة</span><span class="item-qty">× ٢</span></li>
+    </ul>
+
+    <!-- Buttons -->
+    <div class="action-row">
+      <a class="btn-call" id="callBtn" href="tel:+966501234567">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.79a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        اتصال
+      </a>
+      <a class="btn-whatsapp" id="whatsappBtn" href="https://wa.me/966501234567" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.86L.073 23.27a.75.75 0 00.916.916l5.41-1.461A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.97 0-3.81-.54-5.38-1.48l-.387-.23-3.217.87.87-3.217-.23-.387A9.745 9.745 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+        </svg>
+        واتساب
+      </a>
+    </div>
+
+    <button class="btn-delivered" onclick="markDelivered()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      تم التسليم
+    </button>
+  </div>
+</div>
+
+<!-- ═══════ UPCOMING ORDERS ═══════ -->
+<div class="section-head">
+  <div class="section-title">الطلبات القادمة</div>
+</div>
+<div class="upcoming-list" id="upcomingList">
+
+  <div class="upcoming-card">
+    <div class="upcoming-status-dot dot-ready"></div>
+    <div class="upcoming-info">
+      <div class="upcoming-num">#١٠٢٥</div>
+      <div class="upcoming-name">سا••• الق••••••</div>
+      <div class="upcoming-addr">حي السلام، طريق الأمير محمد</div>
+    </div>
+    <div class="upcoming-badge badge-ready">جاهز للاستلام</div>
+  </div>
+
+  <div class="upcoming-card">
+    <div class="upcoming-status-dot dot-waiting"></div>
+    <div class="upcoming-info">
+      <div class="upcoming-num">#١٠٢٦</div>
+      <div class="upcoming-name">خا••• الم•••••</div>
+      <div class="upcoming-addr">حي الروضة، شارع عمر بن الخطاب</div>
+    </div>
+    <div class="upcoming-badge badge-waiting">قيد التحضير</div>
+  </div>
+
+</div>
+
+<!-- ═══════ DAY SUMMARY ═══════ -->
+<div class="section-head">
+  <div class="section-title">ملخص اليوم</div>
+</div>
+<div class="summary-card">
+  <div class="summary-title">إجمالي طلبات اليوم</div>
+  <div class="summary-stats">
+    <div class="summary-stat">
+      <div class="summary-num" id="summaryDone">٥</div>
+      <div class="summary-label">منجزة</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="summary-num" id="summaryTransit">١</div>
+      <div class="summary-label">قيد التوصيل</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="summary-num" id="summaryCancelled">٠</div>
+      <div class="summary-label">ملغاة</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="toastMsg">تم تسجيل التسليم بنجاح</span>
+</div>
+
+<script>
+// ══════════ Name masking ══════════
+function maskName(name) {
+  return name.split(' ').map(word =>
+    word.length <= 2 ? word : word.slice(0, 2) + '•'.repeat(word.length - 2)
+  ).join(' ');
+}
+
+// ══════════ Mock data ══════════
+const CURRENT_ORDER = {
+  id: '١٠٢٤',
+  customer: { name: 'أحمد الشمري', phone: '0501234567' },
+  address: 'حي النزهة، شارع الملك فهد\nبجانب مسجد الرحمة',
+  items: [
+    { name: 'برجر دجاج مقرمش', qty: '٢' },
+    { name: 'عصير برتقال طازج', qty: '١' },
+    { name: 'بطاطس مقلية كبيرة', qty: '٢' },
+  ]
+};
+
+// Populate current order
+document.getElementById('customerName').textContent = maskName(CURRENT_ORDER.customer.name);
+document.getElementById('deliveryAddress').innerHTML = CURRENT_ORDER.address.replace('\n', '<br>');
+document.getElementById('callBtn').href = 'tel:+966' + CURRENT_ORDER.customer.phone.replace(/^0/, '');
+document.getElementById('whatsappBtn').href = 'https://wa.me/966' + CURRENT_ORDER.customer.phone.replace(/^0/, '');
+
+const addressQuery = encodeURIComponent(CURRENT_ORDER.address.replace('\n', ' '));
+document.getElementById('mapBtn').href = 'https://maps.google.com/?q=' + addressQuery;
+
+// ══════════ Status toggle ══════════
+function setStatus(btn) {
+  document.querySelectorAll('.status-btn').forEach(b => {
+    b.className = 'status-btn';
+  });
+  const s = btn.dataset.status;
+  btn.classList.add('active-' + s);
+  showToast(
+    s === 'available' ? 'حالتك: متاح لاستقبال الطلبات' :
+    s === 'busy'      ? 'حالتك: مشغول حالياً' :
+                        'حالتك: في إجازة'
+  );
+}
+
+// ══════════ Mark delivered ══════════
+let doneCount = 5;
+function markDelivered() {
+  doneCount++;
+  document.getElementById('doneCount').textContent = toArabicNum(doneCount);
+  document.getElementById('summaryDone').textContent = toArabicNum(doneCount);
+  document.getElementById('summaryTransit').textContent = '٠';
+  showToast('تم تسجيل التسليم بنجاح ✓');
+
+  // Simulate moving to next order
+  setTimeout(() => {
+    const card = document.getElementById('currentOrderCard');
+    card.style.opacity = '0.4';
+    card.style.pointerEvents = 'none';
+    showToast('لا يوجد طلب حالي — في انتظار الإسناد');
+  }, 1800);
+}
+
+// ══════════ Toast ══════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ══════════ Arabic numerals ══════════
+function toArabicNum(n) {
+  return n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+</script>
+</body>
+</html>

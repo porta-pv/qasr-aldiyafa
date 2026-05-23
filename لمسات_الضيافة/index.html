@@ -737,6 +737,75 @@
   }
 
 
+/* ===== IN-APP NOTIFICATION TOAST ===== */
+.notif-toast {
+  position: fixed;
+  top: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 400px;
+  background: var(--navy);
+  color: white;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(13,33,55,0.35);
+  transition: top 0.4s cubic-bezier(.32,1.2,.42,1);
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+}
+
+.notif-toast.show { top: 16px; }
+
+.notif-toast-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.notif-toast-icon img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.notif-toast-body { flex: 1; }
+
+.notif-toast-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-light, #D4AE44);
+  margin-bottom: 2px;
+}
+
+.notif-toast-msg {
+  font-size: 13px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.4;
+}
+
+.notif-toast-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 
 /* ═══════════════ MEAL SHEET ═══════════════ */
 .meal-overlay {
@@ -1942,8 +2011,104 @@
 <!-- ═══════════════════════════════════════════════════ -->
 
 
+<!-- IN-APP NOTIFICATION TOAST -->
+<div class="notif-toast" id="notifToast">
+  <div class="notif-toast-icon">
+    <img src="icon-192.png" alt="">
+  </div>
+  <div class="notif-toast-body">
+    <div class="notif-toast-title" id="notifToastTitle">لمسات الضيافة</div>
+    <div class="notif-toast-msg"   id="notifToastMsg"></div>
+  </div>
+  <button class="notif-toast-close" id="notifToastClose">&#x2715;</button>
+</div>
 
 
+<script>
+// ═══════════════ NOTIFICATIONS DEMO ═══════════════
+(function() {
+
+  const NOTIFICATIONS = [
+    { title: 'لمسات الضيافة', body: 'تم استلام طلبك رقم #91 بنجاح' },
+    { title: 'لمسات الضيافة', body: 'المطبخ بدأ تحضير طلبك الآن' },
+    { title: 'لمسات الضيافة', body: 'طلبك في الطريق إليك' },
+    { title: 'لمسات الضيافة', body: 'وصل طلبك — استمتع بوجبتك' },
+  ];
+
+  const toast      = document.getElementById('notifToast');
+  const toastTitle = document.getElementById('notifToastTitle');
+  const toastMsg   = document.getElementById('notifToastMsg');
+  const toastClose = document.getElementById('notifToastClose');
+  let toastTimer   = null;
+
+  // ── Show in-app toast ──────────────────────────────────────────
+  function showToast(title, body) {
+    toastTitle.textContent = title;
+    toastMsg.textContent   = body;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  toastClose.addEventListener('click', () => {
+    toast.classList.remove('show');
+    clearTimeout(toastTimer);
+  });
+
+  // ── Listen for SW messages (page open) ────────────────────────
+  navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data && e.data.type === 'SHOW_NOTIFICATION') {
+      showToast(e.data.title, e.data.body);
+    }
+  });
+
+  // ── Request permission and start demo ─────────────────────────
+  async function startNotifDemo() {
+    if (!('Notification' in window)) {
+      alert('متصفحك لا يدعم الإشعارات');
+      return;
+    }
+
+    let permission = Notification.permission;
+
+    if (permission === 'default') {
+      permission = await Notification.requestPermission();
+    }
+
+    if (permission !== 'granted') {
+      showToast('لمسات الضيافة', 'لم يتم منح إذن الإشعارات');
+      return;
+    }
+
+    // Send schedule to SW
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SCHEDULE_NOTIFICATIONS',
+        delay: 10000,
+        interval: 5000,
+        notifications: NOTIFICATIONS
+      });
+      showToast('لمسات الضيافة', 'سيبدأ اختبار الإشعارات خلال 10 ثواني');
+    } else {
+      // Fallback: run directly in page if SW not ready
+      showToast('لمسات الضيافة', 'سيبدأ اختبار الإشعارات خلال 10 ثواني');
+      setTimeout(() => {
+        NOTIFICATIONS.forEach((n, i) => {
+          setTimeout(() => showToast(n.title, n.body), i * 5000);
+        });
+      }, 10000);
+    }
+  }
+
+  // ── Attach to menu button ─────────────────────────────────────
+  const menuBtn = document.getElementById('menuNavBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', startNotifDemo);
+  }
+
+})();
+// ══════════════════════════════════════════════════
+</script>
 
 
 <!-- ═══════════════ MEAL CUSTOMIZATION SHEET ═══════════════ -->
